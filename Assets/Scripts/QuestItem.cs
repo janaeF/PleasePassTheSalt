@@ -5,6 +5,7 @@ public class QuestItem : MonoBehaviour
     public int itemIndex;
     public string itemName;
     public float pickupRange = 3f;
+    public AudioClip pickupSound;
 
     private bool _collectable = false;
     private bool _collected = false;
@@ -31,16 +32,14 @@ public class QuestItem : MonoBehaviour
     {
         if (!_collectable || _collected) return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame)
         {
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null)
             {
                 float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist <= pickupRange)
-                {
                     Collect();
-                }
             }
         }
     }
@@ -48,6 +47,10 @@ public class QuestItem : MonoBehaviour
     void Collect()
     {
         _collected = true;
+
+        if (pickupSound != null)
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+
         gameObject.SetActive(false);
         QuestManager.Instance.ItemCollected(itemIndex);
     }

@@ -7,6 +7,7 @@ public class MazeBarrier : MonoBehaviour
     public float triggerDistance = 2f;
     private bool _unlocked = false;
     private bool _triggered = false;
+    private bool _dialogueCooldown = false;
 
     void Awake()
     {
@@ -16,11 +17,15 @@ public class MazeBarrier : MonoBehaviour
     public void UnlockBarrier()
     {
         _unlocked = true;
+        // Disable collider so player can walk through when unlocked
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.isTrigger = true;
     }
 
     void Update()
     {
         if (_triggered) return;
+        if (_dialogueCooldown) return;
 
         GameObject player = GameObject.FindWithTag("Player");
         if (player == null) return;
@@ -28,11 +33,11 @@ public class MazeBarrier : MonoBehaviour
         float dist = Vector3.Distance(transform.position, player.transform.position);
         if (dist <= triggerDistance)
         {
-            _triggered = true;
-
             if (!_unlocked)
             {
-                _triggered = false;
+                _triggered = true;
+                StartCoroutine(BlockCooldown());
+
                 if (DialogueSystem.Instance != null && !DialogueSystem.Instance.IsDialogueActive)
                 {
                     DialogueSystem.Instance.StartDialogue("You", new string[] {
@@ -43,9 +48,18 @@ public class MazeBarrier : MonoBehaviour
             }
             else
             {
+                _triggered = true;
                 StartCoroutine(ReturnHome());
             }
         }
+    }
+
+    System.Collections.IEnumerator BlockCooldown()
+    {
+        _dialogueCooldown = true;
+        yield return new WaitForSeconds(2f);
+        _triggered = false;
+        _dialogueCooldown = false;
     }
 
     System.Collections.IEnumerator ReturnHome()

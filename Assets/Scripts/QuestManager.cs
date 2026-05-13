@@ -10,6 +10,7 @@ public class QuestManager : MonoBehaviour
 
     [Header("Mom Dialogue")]
     public string[] requestDialogue = {
+        "Can you be a dear and find the salt for me?",
         "Now can you find the ketchup? It should be around the main room somewhere.",
         "I also need the mustard, can you find it for me?",
         "Almost done! Last one, can you find the vinegar?"
@@ -19,7 +20,7 @@ public class QuestManager : MonoBehaviour
         "You found the salt! Thank you so much!",
         "The ketchup! Great job!",
         "Wonderful, you found the mustard!",
-        "The vinegar! Now I have everything I need. Thank you!"
+        "The vinegar! Now I have everything I need. Thank you so much!"
     };
 
     public string[] hintDialogue = {
@@ -66,7 +67,8 @@ public class QuestManager : MonoBehaviour
     public void StartFirstDialogue()
     {
         DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-            "Can you help me find the salt? I think I left it somewhere in the house..."
+            "Hi honey! Welcome back, you're right on time. I'm making dinner.",
+            requestDialogue[0]
         });
     }
 
@@ -74,7 +76,7 @@ public class QuestManager : MonoBehaviour
     {
         if (itemIndex != _currentIndex) return;
         _itemPickedUp = true;
-        if (DialogueSystem.Instance != null)
+        if (DialogueSystem.Instance != null && !DialogueSystem.Instance.IsDialogueActive)
             DialogueSystem.Instance.StartDialogue("You", new string[] {
                 "I found the " + itemNames[_currentIndex] + "! Let me bring it to Mom."
             });
@@ -93,16 +95,16 @@ public class QuestManager : MonoBehaviour
             _questComplete = true;
             if (DialogueSystem.Instance != null)
                 DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-                    deliver,
-                    "You found everything! Now I can finish cooking. Thank you so much!"
+                    deliver
                 });
+            StartCoroutine(LoadEndScreen());
             return;
         }
 
         if (DialogueSystem.Instance != null)
             DialogueSystem.Instance.StartDialogue("Mom", new string[] {
                 deliver,
-                requestDialogue[_currentIndex - 1]
+                requestDialogue[_currentIndex]
             });
 
         if (questItems[_currentIndex] != null)
@@ -116,5 +118,11 @@ public class QuestManager : MonoBehaviour
             DialogueSystem.Instance.StartDialogue("Mom", new string[] {
                 hintDialogue[_currentIndex]
             });
+    }
+
+    System.Collections.IEnumerator LoadEndScreen()
+    {
+        yield return new WaitUntil(() => !DialogueSystem.Instance.IsDialogueActive);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("EndScreen");
     }
 }

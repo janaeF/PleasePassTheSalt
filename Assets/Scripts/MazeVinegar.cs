@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class MazeVinegar : MonoBehaviour
 {
     public float pickupRange = 3f;
+    public AudioClip pickupSound;
     private bool _collected = false;
 
     [Header("Highlight")]
@@ -14,11 +15,10 @@ public class MazeVinegar : MonoBehaviour
     void Start()
     {
         if (itemRenderer != null)
+        {
             _originalColor = itemRenderer.material.color;
-        
-        // Highlight immediately since it's always collectable
-        if (itemRenderer != null)
             itemRenderer.material.color = highlightColor;
+        }
     }
 
     void Update()
@@ -40,6 +40,10 @@ public class MazeVinegar : MonoBehaviour
     void Collect()
     {
         _collected = true;
+
+        if (pickupSound != null)
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+
         gameObject.SetActive(false);
         MazeBarrier.Instance.UnlockBarrier();
         DialogueSystem.Instance.StartDialogue("You", new string[] {
