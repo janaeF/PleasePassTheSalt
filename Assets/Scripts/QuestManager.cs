@@ -123,6 +123,6 @@ public class QuestManager : MonoBehaviour
     System.Collections.IEnumerator LoadEndScreen()
     {
         yield return new WaitUntil(() => !DialogueSystem.Instance.IsDialogueActive);
-        UnityEngine.SceneManagement.SceneManager.LoadScene("EndScreen");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Ending");
     }
 }

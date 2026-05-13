@@ -19,6 +19,9 @@ public class FadeManager : MonoBehaviour
         imageObj.transform.SetParent(transform, false);
         _fadeImage = imageObj.AddComponent<Image>();
         _fadeImage.color = new Color(0, 0, 0, 0);
+
+        _fadeImage.raycastTarget = false;
+
         RectTransform rt = imageObj.GetComponent<RectTransform>();
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.one;
@@ -35,12 +38,16 @@ public class FadeManager : MonoBehaviour
 
     public IEnumerator FadeToBlack(float duration)
     {
+        _fadeImage.raycastTarget = true;
         yield return StartCoroutine(Fade(0, 1, duration));
+        _fadeImage.raycastTarget = true;
     }
 
     public IEnumerator FadeFromBlack(float duration)
     {
+        _fadeImage.raycastTarget = true;
         yield return StartCoroutine(Fade(1, 0, duration));
+        _fadeImage.raycastTarget = false;
     }
 
     IEnumerator Fade(float from, float to, float duration)

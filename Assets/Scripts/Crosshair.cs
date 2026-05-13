@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class Crosshair : MonoBehaviour
 {
+    [Header("Scene Settings")]
+    [SerializeField] private string[] scenesWithoutCrosshair = { "Ending", "Menu" };
+
     [Header("Crosshair Settings")]
     public Color normalColor = Color.white;
     public Color hoverColor = Color.yellow;
@@ -21,10 +24,20 @@ public class Crosshair : MonoBehaviour
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    foreach (string sceneName in scenesWithoutCrosshair)
     {
-        // Wait a frame before recreating crosshair
-        StartCoroutine(RecreateCrosshair());
+        if (scene.name == sceneName)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Destroy(gameObject);
+            return;
+        }
     }
+
+    StartCoroutine(RecreateCrosshair());
+}
 
     System.Collections.IEnumerator RecreateCrosshair()
     {
