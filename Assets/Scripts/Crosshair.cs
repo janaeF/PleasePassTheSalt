@@ -19,7 +19,7 @@ public class Crosshair : MonoBehaviour
         Cursor.visible = false;
 
         // Create crosshair UI
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindAnyObjectByType<Canvas>();
 
         // Parent object
         GameObject parent = new GameObject("Crosshair");

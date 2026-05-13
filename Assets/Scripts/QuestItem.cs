@@ -33,13 +33,14 @@ public class QuestItem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, pickupRange))
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
             {
-                if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                float dist = Vector3.Distance(transform.position, player.transform.position);
+                if (dist <= pickupRange)
+                {
                     Collect();
+                }
             }
         }
     }

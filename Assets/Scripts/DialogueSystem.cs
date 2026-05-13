@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
@@ -15,9 +14,12 @@ public class DialogueSystem : MonoBehaviour
 
     private bool _isTyping = false;
     private bool _skipTyping = false;
-    private string _currentFullText = "";
-    private Coroutine _typingCoroutine;
     private bool _dialogueActive = false;
+    private bool _waitingForClick = false;
+    private float _lastClickTime = 0f;
+    private float _doubleClickThreshold = 0.3f;
+
+    public bool IsDialogueActive => _dialogueActive;
 
     public static DialogueSystem Instance;
 
@@ -29,17 +31,28 @@ public class DialogueSystem : MonoBehaviour
 
     void Update()
     {
-        if (_dialogueActive && Input.GetMouseButtonDown(0))
+        if (!_dialogueActive) return;
+
+        if (Input.GetMouseButtonDown(0))
         {
+            // Double click to close
+            if (Time.time - _lastClickTime < _doubleClickThreshold)
+            {
+                CloseDialogue();
+                return;
+            }
+            _lastClickTime = Time.time;
+
             if (_isTyping)
                 _skipTyping = true;
-            else
-                CloseDialogue();
+            else if (_waitingForClick)
+                _waitingForClick = false;
         }
     }
 
     public void StartDialogue(string speakerName, string[] lines)
     {
+        StopAllCoroutines();
         dialoguePanel.SetActive(true);
         nameText.text = speakerName;
         _dialogueActive = true;
@@ -48,20 +61,23 @@ public class DialogueSystem : MonoBehaviour
 
     IEnumerator PlayLines(string[] lines)
     {
+        // Wait one frame so the click that opened dialogue doesn't immediately advance it
+        yield return null;
+
         foreach (string line in lines)
         {
             yield return StartCoroutine(TypeLine(line));
-            // Wait for click before next line
-            yield return new WaitUntil(() => !_isTyping && Input.GetMouseButtonDown(0));
+
+            // Wait for click to advance
+            _waitingForClick = true;
+            yield return new WaitUntil(() => !_waitingForClick);
         }
-        CloseDialogue();
     }
 
     IEnumerator TypeLine(string line)
     {
         _isTyping = true;
         _skipTyping = false;
-        _currentFullText = line;
         dialogueText.text = "";
 
         foreach (char c in line)
@@ -78,11 +94,11 @@ public class DialogueSystem : MonoBehaviour
         _isTyping = false;
     }
 
-    void CloseDialogue()
+    public void CloseDialogue()
     {
         _dialogueActive = false;
+        _waitingForClick = false;
+        StopAllCoroutines();
         dialoguePanel.SetActive(false);
-        if (_typingCoroutine != null)
-            StopCoroutine(_typingCoroutine);
     }
 }

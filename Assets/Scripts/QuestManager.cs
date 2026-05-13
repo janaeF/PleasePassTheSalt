@@ -10,10 +10,9 @@ public class QuestManager : MonoBehaviour
 
     [Header("Mom Dialogue")]
     public string[] requestDialogue = {
-        "Can you help me find the salt? I think I left it somewhere in the house...",
-        "Thank you! Now can you find the ketchup? It should be around here somewhere.",
-        "Perfect! I also need the mustard, can you find it for me?",
-        "Almost done! Last one — can you find the vinegar?"
+        "Now can you find the ketchup? It should be around the main room somewhere.",
+        "I also need the mustard, can you find it for me?",
+        "Almost done! Last one, can you find the vinegar?"
     };
 
     public string[] deliverDialogue = {
@@ -24,8 +23,8 @@ public class QuestManager : MonoBehaviour
     };
 
     public string[] hintDialogue = {
-        "Hmm, I think the salt might be near the dining table...",
-        "The ketchup could be in the kitchen somewhere...",
+        "Aw shoot.. I forgot to take the trash out yesterday",
+        "Try asking your dad. He's always leaving things around...",
         "I left the mustard near the living room I think...",
         "The vinegar should be on a shelf somewhere..."
     };
@@ -55,8 +54,7 @@ public class QuestManager : MonoBehaviour
     public void StartFirstDialogue()
     {
         DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-            "Oh! I'm so glad you're here.",
-            requestDialogue[0]
+            "Can you help me find the salt? I think I left it somewhere in the house..."
         });
     }
 
