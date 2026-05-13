@@ -25,3 +25,5 @@ Interact button to steal
 ## Game Flow
 The player will try to avoid raising suspicion and avoid getting caught
 
+## Video Demo
+[Youtube Link](https://youtu.be/hJSZZUzXXC0)
