@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Crosshair : MonoBehaviour
 {
@@ -13,20 +14,42 @@ public class Crosshair : MonoBehaviour
     private Image _vertical;
     private RectTransform _crosshairParent;
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Wait a frame before recreating crosshair
+        StartCoroutine(RecreateCrosshair());
+    }
+
+    System.Collections.IEnumerator RecreateCrosshair()
+    {
+        yield return null;
+        CreateCrosshair();
+    }
+
     void Start()
     {
-        // Hide default cursor
         Cursor.visible = false;
+        CreateCrosshair();
+    }
 
-        // Create crosshair UI
+    void CreateCrosshair()
+    {
+        if (_crosshairParent != null)
+            Destroy(_crosshairParent.gameObject);
+
         Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null) return;
 
-        // Parent object
         GameObject parent = new GameObject("Crosshair");
         parent.transform.SetParent(canvas.transform, false);
         _crosshairParent = parent.AddComponent<RectTransform>();
 
-        // Horizontal line
         GameObject h = new GameObject("Horizontal");
         h.transform.SetParent(parent.transform, false);
         _horizontal = h.AddComponent<Image>();
@@ -34,7 +57,6 @@ public class Crosshair : MonoBehaviour
         RectTransform hRect = h.GetComponent<RectTransform>();
         hRect.sizeDelta = new Vector2(crosshairSize, lineThickness);
 
-        // Vertical line
         GameObject v = new GameObject("Vertical");
         v.transform.SetParent(parent.transform, false);
         _vertical = v.AddComponent<Image>();
@@ -45,10 +67,14 @@ public class Crosshair : MonoBehaviour
 
     void Update()
     {
-        // Move crosshair to mouse position
+        if (_crosshairParent == null) return;
+        if (_horizontal == null) return;
+        if (_vertical == null) return;
+
         _crosshairParent.position = Input.mousePosition;
 
-        // Check if hovering over interactable
+        if (Camera.main == null) return;
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -57,7 +83,6 @@ public class Crosshair : MonoBehaviour
             if (hit.transform.GetComponent<NPCDialogue>() != null ||
                 hit.transform.GetComponent<QuestItem>() != null)
             {
-                // Turn yellow when hovering over interactable
                 _horizontal.color = hoverColor;
                 _vertical.color = hoverColor;
             }
@@ -72,5 +97,10 @@ public class Crosshair : MonoBehaviour
             _horizontal.color = normalColor;
             _vertical.color = normalColor;
         }
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

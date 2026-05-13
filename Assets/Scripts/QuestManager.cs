@@ -39,15 +39,27 @@ public class QuestManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
+        InitQuestItems();
+    }
+
+    void InitQuestItems()
+    {
         for (int i = 0; i < questItems.Length; i++)
         {
+            if (questItems[i] == null) continue;
             questItems[i].SetActive(true);
-            questItems[i].GetComponent<QuestItem>().SetCollectable(i == 0);
+            questItems[i].GetComponent<QuestItem>().SetCollectable(i == _currentIndex);
         }
     }
 
@@ -62,9 +74,10 @@ public class QuestManager : MonoBehaviour
     {
         if (itemIndex != _currentIndex) return;
         _itemPickedUp = true;
-        DialogueSystem.Instance.StartDialogue("You", new string[] {
-            "I found the " + itemNames[_currentIndex] + "! Let me bring it to Mom."
-        });
+        if (DialogueSystem.Instance != null)
+            DialogueSystem.Instance.StartDialogue("You", new string[] {
+                "I found the " + itemNames[_currentIndex] + "! Let me bring it to Mom."
+            });
     }
 
     public void DeliverToMom()
@@ -78,26 +91,30 @@ public class QuestManager : MonoBehaviour
         if (_currentIndex >= questItems.Length)
         {
             _questComplete = true;
-            DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-                deliver,
-                "You found everything! Now I can finish cooking. Thank you so much!"
-            });
+            if (DialogueSystem.Instance != null)
+                DialogueSystem.Instance.StartDialogue("Mom", new string[] {
+                    deliver,
+                    "You found everything! Now I can finish cooking. Thank you so much!"
+                });
             return;
         }
 
-        DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-            deliver,
-            requestDialogue[_currentIndex]
-        });
+        if (DialogueSystem.Instance != null)
+            DialogueSystem.Instance.StartDialogue("Mom", new string[] {
+                deliver,
+                requestDialogue[_currentIndex - 1]
+            });
 
-        questItems[_currentIndex].GetComponent<QuestItem>().SetCollectable(true);
+        if (questItems[_currentIndex] != null)
+            questItems[_currentIndex].GetComponent<QuestItem>().SetCollectable(true);
     }
 
     public void AskForHint()
     {
         if (_questComplete) return;
-        DialogueSystem.Instance.StartDialogue("Mom", new string[] {
-            hintDialogue[_currentIndex]
-        });
+        if (DialogueSystem.Instance != null)
+            DialogueSystem.Instance.StartDialogue("Mom", new string[] {
+                hintDialogue[_currentIndex]
+            });
     }
 }

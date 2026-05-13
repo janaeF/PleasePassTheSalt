@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class DialogueSystem : MonoBehaviour
 {
@@ -25,17 +26,23 @@ public class DialogueSystem : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
-        dialoguePanel.SetActive(false);
+        DontDestroyOnLoad(gameObject);
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
     }
 
     void Update()
     {
         if (!_dialogueActive) return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            // Double click to close
             if (Time.time - _lastClickTime < _doubleClickThreshold)
             {
                 CloseDialogue();
@@ -52,6 +59,7 @@ public class DialogueSystem : MonoBehaviour
 
     public void StartDialogue(string speakerName, string[] lines)
     {
+        if (dialoguePanel == null) return;
         StopAllCoroutines();
         dialoguePanel.SetActive(true);
         nameText.text = speakerName;
@@ -61,14 +69,11 @@ public class DialogueSystem : MonoBehaviour
 
     IEnumerator PlayLines(string[] lines)
     {
-        // Wait one frame so the click that opened dialogue doesn't immediately advance it
         yield return null;
 
         foreach (string line in lines)
         {
             yield return StartCoroutine(TypeLine(line));
-
-            // Wait for click to advance
             _waitingForClick = true;
             yield return new WaitUntil(() => !_waitingForClick);
         }
@@ -99,6 +104,7 @@ public class DialogueSystem : MonoBehaviour
         _dialogueActive = false;
         _waitingForClick = false;
         StopAllCoroutines();
-        dialoguePanel.SetActive(false);
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
     }
 }
