@@ -26,4 +26,4 @@ Interact button to steal
 The player will try to avoid raising suspicion and avoid getting caught
 
 ## Video Demo
-[Youtube Link](https://youtu.be/hJSZZUzXXC0)
+[Youtube Link](https://youtu.be/GsVt3UhgbEU)
