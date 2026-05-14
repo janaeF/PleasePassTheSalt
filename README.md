@@ -3,27 +3,29 @@
 ## Genre
 Simulation, Strategy, Task Completion
 ## Task
-Steal things from the house at a dinner party without being caught!
+Find the lost condiments to help your mom finish dinner!
 ## Motivation/References
-Spyparty - Example Video
+Spyparty\
+Edith Finch
 ## Gameplay
-As a player, you’re at a dinner party and you have to steal as many things as possible without getting caught!
+As a player, you’re at a house and you have to find the missing items to complete tasks for your mom.
 ## Assets
 ### 3D Models
-House
-Item Assets
+House\
+Item Assets\
 NPC models
 
 
 ## 3D Character Model and Animations
-Idle
-Running/Moving
-Interacting/Stealing
+Idle\
+Running/Moving\
+Interacting\
+Dancing
 ## Controls
-WASD/Arrow Keys for character movement
-Interact button to steal
+WASD/Arrow Keys for character movement\
+LMB to interact with object/NPC
 ## Game Flow
-The player will try to avoid raising suspicion and avoid getting caught
+The player will get a task and search for missing items in various locations. Once an item is found, the player will get a new task to complete.
 
 ## Video Demo
 [Youtube Link](https://youtu.be/GsVt3UhgbEU)
